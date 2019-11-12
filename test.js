@@ -28,28 +28,33 @@ let client = new ImapClient.default('just126.justhost.com', 993, {
 let arrNames = []
 let arrMessages = []
 let arrMailboxes = []
-client.connect().then(() => {
-  client.listMailboxes().then(mailboxes => {
-    for (let i = 0; i < mailboxes.children.length; i++) {
-      arrNames.push(mailboxes.children[i].path)
-      if (mailboxes.children[i].children.length !== 0) {
-        mailboxes.children[i].children.map(innerBox => arrNames.push(innerBox.path))
+try {
+  client.connect().then(() => {
+    client.listMailboxes().then(mailboxes => {
+      for (let i = 0; i < mailboxes.children.length; i++) {
+        arrNames.push(mailboxes.children[i].path)
+        if (mailboxes.children[i].children.length !== 0) {
+          mailboxes.children[i].children.map(innerBox => arrNames.push(innerBox.path))
+        }
       }
-    }
-    return arrNames
-  }).then(arrNames => {
-    let lastDateOfInvoking = require('./lastDateOfInvoking.json')
-    for (let i = 0; i < arrNames.length; i++) {
-      client.search(`${arrNames[i]}`, { unseen: true, since: new Date(lastDateOfInvoking[0], 9, lastDateOfInvoking[2], lastDateOfInvoking[3], lastDateOfInvoking[4], 0, 0, 0) }).then((result) => {
-        let lastMessage = Math.max(...result)
-        if (lastMessage <= 0) {
-          console.log('there are no emails in this box')
-        } else {
-          arrMailboxes.push(arrNames[i])
-          console.log(lastMessage, '-lastMessage', arrNames.length, '-arrNames', arrMailboxes.length, '-arrMailboxes')
-          if (i === arrNames.length - 1) {
-            arrMailboxes.forEach(box => {
-              client.listMessages(`${box}`, `${lastMessage - 9}:${lastMessage}`, ['envelope', 'body.peek[]']).then((messages) => {
+      return arrNames
+    })
+      .then(arrNames => {
+        // console.log(arrNames)
+        let lastDateOfInvoking = require('./lastDateOfInvoking.json')
+        for (let i = 0; i < arrNames.length; i++) {
+          client.search(`${arrNames[i]}`, { unseen: true, since: new Date(lastDateOfInvoking[0], 9, lastDateOfInvoking[2], lastDateOfInvoking[3], lastDateOfInvoking[4], 0, 0, 0) }).then((result) => {
+            // console.log(result,'result')
+
+            let lastMessage = Math.max(...result)
+            if (lastMessage <= 0) {
+              console.log('there are no emails in this box')
+              console.log(arrNames)
+            } else {
+              arrMailboxes.push(arrNames[i])
+              console.log(arrMailboxes, 'arrNames')
+              client.listMessages(`${arrNames[i]}`, `${lastMessage - 9}:${lastMessage}`, ['envelope', 'body.peek[]']).then((messages) => {
+                // console.log(messages.length,'messages length')
                 messages.forEach((message) => {
                   // console.log(message.envelope)
                   arrMessages.push(message.envelope.from[0].address)
@@ -87,33 +92,39 @@ client.connect().then(() => {
                         }
                       }
                       // console.log(result)
+                      var end = new Date();
+                      var endTime = end.getTime();
+                      var timeTaken = endTime - startTime;
+                      console.log('Execution time is : ' + timeTaken);
                     })
                 })
+
               }).catch(e => {
                 // console.log('listMessages' + e)
               })
-            })
+            }
           }
+          ).catch(e => {
+            console.log('search catch' + e)
+          })
         }
-      }).catch(e => {
-        console.log('search catch' + e)
-      })
-    }
-    var end = new Date();
-    var endTime = end.getTime();
-    var timeTaken = end - start;
-    console.log('Execution time is : ' + timeTaken);
+        let year = new Date().getFullYear()
+        let month = new Date().getMonth()
+        let date = new Date().getDate()
+        let hour = new Date().getHours()
+        let minutes = new Date().getMinutes()
+        let dateArr = [year, month, date, hour, minutes]
+        fs.writeFileSync('lastDateOfInvoking.json', JSON.stringify(dateArr), 'utf8', function (err) {
+          if (err) throw err;
+          console.log('complete');
+        });
+      }
+      )
+  }
+  ).catch(e => {
+    console.log('connect catch' + e)
   })
-}).catch(e => {
-  console.log('connect catch' + e)
-})
-let year = new Date().getFullYear()
-let month = new Date().getMonth()
-let date = new Date().getDate()
-let hour = new Date().getHours()
-let minutes = new Date().getMinutes()
-let dateArr = [year, month, date, hour, minutes]
-fs.writeFileSync('lastDateOfInvoking.json', JSON.stringify(dateArr), 'utf8', function (err) {
-  if (err) throw err;
-  console.log('complete');
-});
+} catch (e) {
+  console.log(e)
+}
+// }

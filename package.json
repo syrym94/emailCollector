@@ -13,6 +13,7 @@
     "axios": "^0.19.0",
     "emailjs-imap-client": "^3.0.7",
     "emailjs-mime-parser": "^2.0.7",
+    "express": "^4.17.1",
     "form-data": "^2.5.1"
   }
 }

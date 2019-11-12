@@ -2,6 +2,7 @@ const emails = async () => {
     const axios = require('axios');
     var FormData = require('form-data');
     var data = new FormData();
+    let owner_id = 1
     data.append("owner_id", "1");
     data.append("profiles_types_ids", "1,3,4");
     let response = await axios({
@@ -30,6 +31,6 @@ const emails = async () => {
         }
     })
     let merged = [].concat.apply([], emails);
-    return merged
+    return [merged,values,owner_id]
 }
 module.exports = emails
