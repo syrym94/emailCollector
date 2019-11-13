@@ -1,4 +1,17 @@
 (async () => {
+    // var express = require('express');
+    // var app = express();
+    // let messages = require('./routes/messages')
+    // let profiles = require('./routes/profiles')
+    // let attachments = require('./routes/attachments')
+    // bodyParser = require('body-parser');
+    // app.use(bodyParser.urlencoded({ extended: true }));
+    // app.use(bodyParser.json());
+    // app.use('/messages',messages)
+    // app.use('/profiles',profiles)
+    // app.use('/attachments',attachments)
+
+    // app.listen(3000);
     var start = new Date();
     var startTime = start.getTime();
     const ImapClient = require('emailjs-imap-client')
@@ -64,6 +77,8 @@
             pass: '.!rT>a*M1X',
         }
     })
+    client.logLevel = client.LOG_LEVEL_NONE; // Закоментить если необходимы детальные логи
+
     let arrNames = []
     try {
         //   count++
@@ -100,24 +115,24 @@
     let chunkedArrNames = chunkify(arrNames, 4, true)
     const cp = require('child_process')
     const child1 = cp.fork('main.js')
-    child1.send([chunkedArrNames[0], mails[2]])
+    child1.send([chunkedArrNames[0], mails[2],1])
     child1.on('message', message => {
-        console.log(message)
+        console.log(message,'child1')
     })
     const child2 = cp.fork('main.js')
-    child2.send([chunkedArrNames[1], mails[2]])
+    child2.send([chunkedArrNames[1], mails[2],2])
     child2.on('message', message => {
-        console.log(message)
+        console.log(message,'child2')
     })
     const child3 = cp.fork('main.js')
-    child3.send([chunkedArrNames[2], mails[2]])
+    child3.send([chunkedArrNames[2], mails[2],3])
     child3.on('message', message => {
-        console.log(message)
+        console.log(message,'child3')
     })
     const child4 = cp.fork('main.js')
-    child4.send([chunkedArrNames[3], mails[2]])
+    child4.send([chunkedArrNames[3], mails[2],4])
     child4.on('message', message => {
-        console.log(message)
+        console.log(message,'child4')
     })
 
     var end = new Date();

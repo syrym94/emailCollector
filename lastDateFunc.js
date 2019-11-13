@@ -10,7 +10,6 @@ const lastDateFunc = async () => {
   let dateArr = [year, month, date, hour, minutes]
   fs.writeFile('callDate.json', JSON.stringify(dateArr), 'utf8', function (err) {
     if (err) throw err;
-    console.log('complete');
     var end = new Date();
     var endTime = end.getTime();
     var timeTaken = endTime - startTime;

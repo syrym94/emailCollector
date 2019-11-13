@@ -61,26 +61,41 @@
     let thirdSearch = await search(client, chunkedArrNames[2])
     let fourthSearch = await search(client, chunkedArrNames[3])
     if (firstSearch && secondSearch && thirdSearch && fourthSearch !== undefined) {
-      // console.log(firstSearch, 'firstSearch')
-      // console.log(secondSearch, 'secondSearch')
-      // console.log(thirdSearch, 'thirdSearch')
-      // console.log(fourthSearch, 'fourthSearch')
+      // console.log(firstSearch, 'firstSearch',data[2])
+      // console.log(secondSearch, 'secondSearch',data[2])
+      // console.log(thirdSearch, 'thirdSearch',data[2])
+      // console.log(fourthSearch, 'fourthSearch',data[2])
       let result = [...firstSearch, ...secondSearch, ...thirdSearch, ...fourthSearch]
-      // console.log(result)
+      // console.log(result,data[2])
       if (result.length !== 0) {
         let chunked = chunkify(result, 4, false)
-        let listResult1 = await list(client, chunked[0])
-        let listResult2 = await list(client, chunked[1])
-        let listResult3 = await list(client, chunked[2])
-        let listResult4 = await list(client, chunked[3])
-        // console.log(listResult1, 'listResults1')
-        // console.log(listResult2, 'listResults2')
-        // console.log(listResult3, 'listResults3')
-        // console.log(listResult4, 'listResults4')
+        let listResult1 = await list(client, chunked[0], data[2])
+        let listResult2 = await list(client, chunked[1], data[2])
+        let listResult3 = await list(client, chunked[2], data[2])
+        let listResult4 = await list(client, chunked[3], data[2])
+        // console.log(listResult1, 'listResults1',data[2])
+        // console.log(listResult2, 'listResults2',data[2])
+        // console.log(listResult3, 'listResults3',data[2])
+        // console.log(listResult4, 'listResults4',data[2])
         let final = []
-        if (listResult1 && listResult2 && listResult3 && listResult4 !== undefined) {
-          final.push(listResult1, listResult2, listResult3, listResult4)
-          console.log(final, 'entered the final state')
+        if (listResult1 !== undefined) {
+          final.push(listResult1)
+          console.log(final, 'final')
+          process.send(final)
+        }
+        if (listResult2 !== undefined) {
+          final.push(listResult2)
+          console.log(final, 'final')
+          process.send(final)
+        }
+        if (listResult3 !== undefined) {
+          final.push(listResult3)
+          console.log(final, 'final')
+          process.send(final)
+        }
+        if (listResult4 !== undefined) {
+          final.push(listResult4)
+          console.log(final, 'final')
           process.send(final)
         }
       }
